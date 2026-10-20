@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>صفحتي الشخصية الاحترافية</title>
-    <!-- استدعاء مجموعة خطوط عربية وإنجليزية احترافية -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;600;800;900&family=Changa:wght@400;600;800&family=Orbitron:wght@500;800&family=Outfit:wght@400;600;800&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
@@ -46,7 +45,6 @@
             perspective: 1200px;
         }
 
-        /* شاشة الدخول التفاعلية (Click to Enter) */
         #enter-overlay {
             position: fixed;
             inset: 0;
@@ -77,9 +75,9 @@
             border: 1px solid rgba(255,255,255,0.15);
             border-radius: 50px;
             background: rgba(255,255,255,0.03);
+            text-align: center;
         }
 
-        /* الخلفية عالية الجودة */
         #bg-media, #bg-video {
             position: fixed;
             top: 0;
@@ -89,7 +87,7 @@
             object-fit: cover;
             z-index: -3;
             filter: blur(var(--bg-blur)) contrast(1.06) saturate(1.12);
-            transform: scale(1.03); /* لمنع الحواف البيضاء عند التضبيب */
+            transform: scale(1.03);
             transition: filter 0.3s ease;
         }
 
@@ -100,7 +98,6 @@
             z-index: -2;
         }
 
-        /* حاوية التأثيرات المتحركة (Canvas + DOM) */
         #effects-canvas {
             position: fixed;
             inset: 0;
@@ -115,7 +112,6 @@
             overflow: hidden;
         }
 
-        /* البطاقة الشخصية الاحترافية */
         .profile-card {
             background: rgba(var(--card-rgb), var(--card-opacity));
             backdrop-filter: blur(var(--card-blur));
@@ -133,7 +129,6 @@
             position: relative;
         }
 
-        /* البروفايل وإطاراته الاحترافية */
         .avatar-container {
             width: var(--avatar-size);
             height: var(--avatar-size);
@@ -155,19 +150,9 @@
             z-index: 2;
         }
 
-        /* أنماط إطار البروفايل */
-        .frame-none .avatar-media {
-            border: none;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-        .frame-solid .avatar-media {
-            border: 4px solid var(--avatar-border-color);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-        }
-        .frame-neon .avatar-media {
-            border: 3px solid var(--avatar-border-color);
-            box-shadow: 0 0 15px var(--avatar-border-color), 0 0 35px var(--avatar-border-color), inset 0 0 15px var(--avatar-border-color);
-        }
+        .frame-none .avatar-media { border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .frame-solid .avatar-media { border: 4px solid var(--avatar-border-color); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+        .frame-neon .avatar-media { border: 3px solid var(--avatar-border-color); box-shadow: 0 0 15px var(--avatar-border-color), 0 0 35px var(--avatar-border-color), inset 0 0 15px var(--avatar-border-color); }
         .frame-rgb::before {
             content: '';
             position: absolute;
@@ -203,11 +188,8 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; transform: rotate(360deg); }
         }
-        @keyframes spinCircle {
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes spinCircle { 100% { transform: rotate(360deg); } }
 
-        /* الاسم وشارة التوثيق */
         .name-wrapper {
             display: flex;
             justify-content: center;
@@ -242,7 +224,6 @@
             transform: translateZ(20px);
         }
 
-        /* حاوية الأزرار والروابط */
         .links-container {
             display: flex;
             flex-direction: column;
@@ -270,23 +251,9 @@
             z-index: 1;
         }
 
-        /* تأثيرات حركات الأزرار الاحترافية */
-        /* 1. قفز وتكبير ناعم */
-        .btn-anim-bounce:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5), 0 0 20px var(--btn-bg);
-        }
-
-        /* 2. توهج نيون مشع */
-        .btn-anim-glow {
-            box-shadow: 0 0 12px var(--btn-bg);
-        }
-        .btn-anim-glow:hover {
-            box-shadow: 0 0 25px var(--btn-bg), 0 0 50px var(--btn-bg-2);
-            transform: scale(1.03);
-        }
-
-        /* 3. شعاع ضوئي لامع (Shimmer) */
+        .btn-anim-bounce:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5), 0 0 20px var(--btn-bg); }
+        .btn-anim-glow { box-shadow: 0 0 12px var(--btn-bg); }
+        .btn-anim-glow:hover { box-shadow: 0 0 25px var(--btn-bg), 0 0 50px var(--btn-bg-2); transform: scale(1.03); }
         .btn-anim-shimmer::after {
             content: '';
             position: absolute;
@@ -298,42 +265,16 @@
             transform: rotate(30deg);
             animation: shimmerSweep 3.5s infinite;
         }
-        .btn-anim-shimmer:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
-        }
-        @keyframes shimmerSweep {
-            0% { left: -60%; }
-            35%, 100% { left: 130%; }
-        }
+        .btn-anim-shimmer:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.4); }
+        @keyframes shimmerSweep { 0% { left: -60%; } 35%, 100% { left: 130%; } }
 
-        /* 4. زر ثلاثي الأبعاد 3D */
-        .btn-anim-3d {
-            border-bottom: 5px solid rgba(0, 0, 0, 0.45);
-        }
-        .btn-anim-3d:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.1);
-        }
-        .btn-anim-3d:active {
-            transform: translateY(3px);
-            border-bottom-width: 2px;
-        }
+        .btn-anim-3d { border-bottom: 5px solid rgba(0, 0, 0, 0.45); }
+        .btn-anim-3d:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-anim-3d:active { transform: translateY(3px); border-bottom-width: 2px; }
+        .btn-anim-pulse { animation: pulseGlow 2.2s infinite; }
+        @keyframes pulseGlow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); box-shadow: 0 0 25px var(--btn-bg); } }
 
-        /* 5. نبض مستمر */
-        .btn-anim-pulse {
-            animation: pulseGlow 2.2s infinite;
-        }
-        @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); box-shadow: 0 0 25px var(--btn-bg); }
-        }
-
-        /* 6. اهتزاز السايبر (Cyber Glitch) */
-        .btn-anim-glitch:hover {
-            animation: glitchShake 0.35s cubic-bezier(.36,.07,.19,.97) both;
-            box-shadow: -4px 0 #ff0055, 4px 0 #00f5d4;
-        }
+        .btn-anim-glitch:hover { animation: glitchShake 0.35s cubic-bezier(.36,.07,.19,.97) both; box-shadow: -4px 0 #ff0055, 4px 0 #00f5d4; }
         @keyframes glitchShake {
             10%, 90% { transform: translate3d(-2px, 0, 0); }
             20%, 80% { transform: translate3d(3px, 0, 0); }
@@ -341,7 +282,6 @@
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* مشغل الصوت الاحترافي العائم */
         .audio-widget {
             position: fixed;
             bottom: 25px;
@@ -361,31 +301,14 @@
             transition: 0.3s;
         }
         .audio-widget:hover { transform: scale(1.05); }
-        .equalizer {
-            display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            height: 16px;
-        }
-        .eq-bar {
-            width: 3px;
-            background: var(--btn-bg);
-            border-radius: 2px;
-            height: 4px;
-            transition: 0.2s;
-        }
-        .audio-widget.playing .eq-bar {
-            animation: eqBounce 0.8s infinite ease-in-out alternate;
-        }
+        .equalizer { display: flex; align-items: flex-end; gap: 3px; height: 16px; }
+        .eq-bar { width: 3px; background: var(--btn-bg); border-radius: 2px; height: 4px; transition: 0.2s; }
+        .audio-widget.playing .eq-bar { animation: eqBounce 0.8s infinite ease-in-out alternate; }
         .audio-widget.playing .eq-bar:nth-child(2) { animation-delay: 0.2s; }
         .audio-widget.playing .eq-bar:nth-child(3) { animation-delay: 0.4s; }
         .audio-widget.playing .eq-bar:nth-child(4) { animation-delay: 0.1s; }
-        @keyframes eqBounce {
-            0% { height: 4px; }
-            100% { height: 16px; background: #ec4899; }
-        }
+        @keyframes eqBounce { 0% { height: 4px; } 100% { height: 16px; background: #ec4899; } }
 
-        /* زر فتح لوحة المالك */
         .owner-toggle-btn {
             position: fixed;
             top: 20px;
@@ -406,7 +329,6 @@
         }
         .owner-toggle-btn:hover { transform: translateY(-2px) scale(1.04); }
 
-        /* لوحة تحكم المالك الاحترافية */
         .admin-panel {
             position: fixed;
             top: 0;
@@ -492,21 +414,10 @@
             outline: none;
             transition: border 0.2s;
         }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: #38bdf8;
-        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #38bdf8; }
+        input[type="range"] { width: 100%; accent-color: #38bdf8; cursor: pointer; }
 
-        input[type="range"] {
-            width: 100%;
-            accent-color: #38bdf8;
-            cursor: pointer;
-        }
-
-        .color-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+        .color-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .color-item {
             display: flex;
             align-items: center;
@@ -517,53 +428,15 @@
             border: 1px solid #475569;
             font-size: 0.85rem;
         }
-        .color-item input[type="color"] {
-            border: none;
-            width: 32px;
-            height: 32px;
-            cursor: pointer;
-            background: transparent;
-        }
+        .color-item input[type="color"] { border: none; width: 32px; height: 32px; cursor: pointer; background: transparent; }
 
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-top: 8px; cursor: pointer; font-size: 0.9rem; }
         .checkbox-group input { width: 18px; height: 18px; accent-color: #38bdf8; }
 
-        .link-editor-item {
-            background: #0f172a;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #334155;
-        }
+        .link-editor-item { background: #0f172a; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #334155; }
         .link-editor-item input { margin-bottom: 8px; }
-        .remove-link-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .add-link-btn {
-            width: 100%;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: 0.2s;
-        }
+        .remove-link-btn { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+        .add-link-btn { width: 100%; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: 0.2s; }
         .add-link-btn:hover { background: #2563eb; }
 
         .btn-share {
@@ -580,15 +453,9 @@
             transition: 0.3s;
         }
         .btn-share:hover { transform: translateY(-2px); }
-
         .hint { font-size: 0.76rem; color: #94a3b8; margin-top: 4px; }
 
-        /* جزيئات التأثيرات المتحركة */
-        .dom-particle {
-            position: absolute;
-            pointer-events: none;
-            will-change: transform;
-        }
+        .dom-particle { position: absolute; pointer-events: none; will-change: transform; }
         @keyframes fallDown {
             0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
             15% { opacity: 0.95; }
@@ -607,7 +474,6 @@
             100% { opacity: 0; transform: translateX(-900px) translateY(900px) rotate(-45deg) scale(0.5); }
         }
 
-        /* أثر الماوس */
         .cursor-sparkle {
             position: fixed;
             pointer-events: none;
@@ -623,21 +489,17 @@
 </head>
 <body>
 
-    <!-- شاشة الدخول لتشغيل الصوت والتأثيرات -->
     <div id="enter-overlay" class="hidden" onclick="enterSite()">
         <div class="enter-text" id="enter-btn-text">✨ اضغط هنا للدخول ✨</div>
     </div>
 
-    <!-- وسائط الخلفية -->
     <img id="bg-media" src="" alt="background">
     <video id="bg-video" autoplay loop muted playsinline style="display: none;"></video>
     <div class="bg-overlay"></div>
 
-    <!-- حاويات التأثيرات البصرية -->
     <canvas id="effects-canvas"></canvas>
     <div id="effects-container"></div>
 
-    <!-- مشغل الموسيقى العائم -->
     <audio id="bg-audio" loop></audio>
     <div id="audio-widget" class="audio-widget" onclick="toggleAudio()">
         <div class="equalizer">
@@ -649,12 +511,10 @@
         <span id="audio-status-text" style="font-size: 0.85rem; font-weight: 700;">تشغيل الصوت</span>
     </div>
 
-    <!-- زر المالك (يختفي في رابط المشاهدة) -->
     <button id="owner-btn" class="owner-toggle-btn" onclick="toggleAdmin()">
         ⚙️ تخصيص الصفحة (وضع المالك)
     </button>
 
-    <!-- البطاقة الشخصية -->
     <div class="profile-card" id="profile-card">
         <div class="avatar-container frame-rgb" id="avatar-wrapper">
             <img id="avatar-img" class="avatar-media" src="" alt="Profile">
@@ -671,14 +531,12 @@
         <div class="links-container" id="display-links"></div>
     </div>
 
-    <!-- لوحة تحكم المالك الشاملة -->
     <div class="admin-panel" id="admin-panel">
         <div class="admin-header">
             <h3>🛠️ استوديو تصميم الصفحة Pro</h3>
             <button class="close-admin" onclick="toggleAdmin()">✕</button>
         </div>
 
-        <!-- 1. المعلومات الشخصية والخطوط -->
         <div class="section-box">
             <div class="section-title">👤 الهوية والخطوط</div>
             <div class="form-group">
@@ -718,11 +576,10 @@
             </div>
         </div>
 
-        <!-- 2. البروفايل وإطاره -->
         <div class="section-box">
             <div class="section-title">🖼️ البروفايل والإطار</div>
             <div class="form-group">
-                <label>رابط البروفايل (صورة عالية الدقة، GIF، أو فيديو MP4):</label>
+                <label>رابط البروفايل (صورة، GIF، أو فيديو MP4):</label>
                 <input type="url" id="input-avatar" placeholder="https://..." oninput="updateLive()">
             </div>
             <div class="form-group">
@@ -742,24 +599,22 @@
             </div>
         </div>
 
-        <!-- 3. الخلفية وشفافية البطاقة -->
         <div class="section-box">
             <div class="section-title">🌌 الخلفية وشفافية البطاقة</div>
             <div class="form-group">
-                <label>رابط الخلفية (صورة 4K، GIF متحرك، أو فيديو MP4):</label>
+                <label>رابط الخلفية (صورة 4K، GIF، أو فيديو MP4):</label>
                 <input type="url" id="input-bg" placeholder="https://..." oninput="updateLive()">
             </div>
             <div class="form-group">
                 <label><span>شفافية البطاقة:</span> <span id="val-card-opacity">65%</span></label>
                 <input type="range" id="range-card-opacity" min="0" max="100" value="65" oninput="updateLive()">
-                <div class="hint">اجعلها 0% لتصبح البطاقة شفافة تماماً، أو ارفعها لزيادة العمق.</div>
             </div>
             <div class="form-group">
                 <label><span>ضبابية زجاج البطاقة (Card Blur):</span> <span id="val-card-blur">18px</span></label>
                 <input type="range" id="range-card-blur" min="0" max="40" value="18" oninput="updateLive()">
             </div>
             <div class="form-group">
-                <label><span>ضبابية الخلفية (لإبراز البطاقة):</span> <span id="val-bg-blur">0px</span></label>
+                <label><span>ضبابية الخلفية:</span> <span id="val-bg-blur">0px</span></label>
                 <input type="range" id="range-bg-blur" min="0" max="20" value="0" oninput="updateLive()">
             </div>
             <div class="form-group">
@@ -768,7 +623,6 @@
             </div>
         </div>
 
-        <!-- 4. الألوان العميقة وتأثيرات الحركة -->
         <div class="section-box">
             <div class="section-title">🎨 الألوان والتأثيرات البصرية</div>
             <div class="form-group">
@@ -776,7 +630,7 @@
                 <select id="input-effect" onchange="updateLive()">
                     <option value="fireflies">✨ يراعات مضيئة ونجوم عائمة</option>
                     <option value="sakura">🌸 بتلات أزهار الكرز المتساقطة (Sakura)</option>
-                    <option value="matrix">💻 مطر الماتريكس الرقمي (Matrix Hacker)</option>
+                    <option value="matrix">💻 مطر الماتريكس الرقمي</option>
                     <option value="meteors">☄️ شهب ونيازك فضائية</option>
                     <option value="snow">❄️ عاصفة ثلجية ناعمة</option>
                     <option value="hearts">💖 قلوب نيون متصاعدة</option>
@@ -796,30 +650,12 @@
             </div>
 
             <div class="color-grid">
-                <div class="color-item">
-                    <input type="color" id="color-btn" oninput="updateLive()">
-                    <span>لون الزر (1)</span>
-                </div>
-                <div class="color-item">
-                    <input type="color" id="color-btn-2" oninput="updateLive()">
-                    <span>تدرج الزر (2)</span>
-                </div>
-                <div class="color-item">
-                    <input type="color" id="color-btn-text" oninput="updateLive()">
-                    <span>نص الأزرار</span>
-                </div>
-                <div class="color-item">
-                    <input type="color" id="color-text" oninput="updateLive()">
-                    <span>لون النصوص</span>
-                </div>
-                <div class="color-item">
-                    <input type="color" id="color-card" oninput="updateLive()">
-                    <span>لون البطاقة</span>
-                </div>
-                <div class="color-item">
-                    <input type="color" id="color-avatar-border" oninput="updateLive()">
-                    <span>لون الإطار</span>
-                </div>
+                <div class="color-item"><input type="color" id="color-btn" oninput="updateLive()"><span>لون الزر (1)</span></div>
+                <div class="color-item"><input type="color" id="color-btn-2" oninput="updateLive()"><span>تدرج الزر (2)</span></div>
+                <div class="color-item"><input type="color" id="color-btn-text" oninput="updateLive()"><span>نص الأزرار</span></div>
+                <div class="color-item"><input type="color" id="color-text" oninput="updateLive()"><span>لون النصوص</span></div>
+                <div class="color-item"><input type="color" id="color-card" oninput="updateLive()"><span>لون البطاقة</span></div>
+                <div class="color-item"><input type="color" id="color-avatar-border" oninput="updateLive()"><span>لون الإطار</span></div>
             </div>
 
             <label class="checkbox-group" style="margin-top: 14px;">
@@ -832,17 +668,15 @@
             </label>
         </div>
 
-        <!-- 5. الموسيقى وشاشة الدخول -->
         <div class="section-box">
             <div class="section-title">🎵 الموسيقى وشاشة الدخول</div>
             <div class="form-group">
                 <label>رابط أغنية أو مقطع صوتي مباشر (MP3):</label>
-                <input type="url" id="input-audio" placeholder="https://example.com/song.mp3" oninput="updateLive()">
-                <div class="hint">يظهر مشغل أنيق أسفل الشاشة عند وضع رابط صوتي.</div>
+                <input type="url" id="input-audio" placeholder="https://..." oninput="updateLive()">
             </div>
             <label class="checkbox-group">
                 <input type="checkbox" id="check-enter-screen" onchange="updateLive()">
-                <span>تفعيل شاشة "اضغط للدخول" (لتشغيل الأغنية تلقائياً)</span>
+                <span>تفعيل شاشة "اضغط للدخول"</span>
             </label>
             <div class="form-group" style="margin-top: 10px;">
                 <label>نص شاشة الدخول:</label>
@@ -850,7 +684,6 @@
             </div>
         </div>
 
-        <!-- 6. الروابط المدمجة بالكلمات -->
         <div class="section-box">
             <div class="section-title">🔗 الكلمات المدمجة بروابط مباشرة</div>
             <div id="links-editor-list"></div>
@@ -858,13 +691,9 @@
         </div>
 
         <button class="btn-share" onclick="copyViewerLink()">📋 نسخ رابط المشاهدة للزوار</button>
-        <div class="hint" style="text-align: center; margin-top: 8px; margin-bottom: 30px;">
-            سيتم تشفير كل إعداداتك وألوانك وأغانيك داخل الرابط ليراها الزوار بدون لوحة التحكم!
-        </div>
     </div>
 
     <script>
-        // الإعدادات الافتراضية الاحترافية
         let profileData = {
             name: "أحمد محمد",
             badge: "👑",
@@ -889,21 +718,18 @@
             avatarBorderColor: "#ec4899",
             tilt3d: true,
             cursorTrail: true,
-            audioUrl: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",
+            audioUrl: "",
             enterScreen: false,
             enterText: "✨ اضغط هنا للدخول إلى عالمي ✨",
             links: [
                 { title: "حسابي الرسمي على إنستغرام 📸", url: "https://instagram.com" },
-                { title: "قناتي على يوتيوب ▶️", url: "https://youtube.com" },
-                { title: "تواصل معي عبر واتساب 💬", url: "https://wa.me/123456789" },
-                { title: "معرض أعمالي ومشاريعي 💼", url: "https://github.com" }
+                { title: "قناتي على يوتيوب ▶️", url: "https://youtube.com" }
             ]
         };
 
         let typewriterTimer = null;
         let matrixInterval = null;
 
-        // تحويل كود اللون Hex إلى RGB للتحكم الدقيق بالشفافية
         function hexToRgb(hex) {
             hex = hex.replace('#', '');
             if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
@@ -911,22 +737,27 @@
             return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
         }
 
+        // تم إصلاح الدالة هنا بالكامل لتعرف فوراً ما إذا كان الرابط رابط زائر وتخفي لوحة التحكم تماماً
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const encodedData = urlParams.get('view');
 
             if (encodedData) {
-                // وضع الزائر (المشاهدة فقط)
+                // وضع الزائر (إخفاء أزرار المالك تماماً وإجبار الموقع على عرض البيانات المشفرة)
                 try {
                     const decodedJson = decodeURIComponent(escape(atob(encodedData)));
                     profileData = { ...profileData, ...JSON.parse(decodedJson) };
-                    document.getElementById('owner-btn').style.display = 'none';
-                    document.getElementById('admin-panel').style.display = 'none';
+                    
+                    // إخفاء زر التعديل واللوحة نهائياً للزوار
+                    const ownerBtn = document.getElementById('owner-btn');
+                    const adminPanel = document.getElementById('admin-panel');
+                    if (ownerBtn) ownerBtn.style.display = 'none';
+                    if (adminPanel) adminPanel.style.display = 'none';
                 } catch (e) {
-                    console.error("خطأ في قراءة الرابط:", e);
+                    console.error("خطأ في قراءة بيانات رابط الزائر:", e);
                 }
             } else {
-                // وضع المالك
+                // وضع المالك: تحميل الإعدادات المحفوظة محلياً إن وجدت
                 const saved = localStorage.getItem('proPersonalPageV2');
                 if (saved) {
                     try { profileData = { ...profileData, ...JSON.parse(saved) }; } catch(e){}
@@ -1070,7 +901,6 @@
             return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.ogg');
         }
 
-        // تأثير الآلة الكاتبة
         function startTypewriter(text) {
             const bioEl = document.getElementById('display-bio');
             clearInterval(typewriterTimer);
@@ -1087,7 +917,6 @@
         }
 
         function renderPage(reinitEffect = false, restartBio = false) {
-            // تحديث أرقام أشرطة التمرير في لوحة التحكم
             const opLabel = document.getElementById('val-card-opacity');
             if (opLabel) {
                 opLabel.innerText = profileData.cardOpacity + '%';
@@ -1097,7 +926,6 @@
                 document.getElementById('val-avatar-size').innerText = profileData.avatarSize + 'px';
             }
 
-            // النصوص والخطوط
             document.documentElement.style.setProperty('--font-main', profileData.font);
             document.getElementById('display-name').innerText = profileData.name;
             document.getElementById('display-badge').innerText = profileData.badge;
@@ -1111,7 +939,6 @@
                 document.getElementById('display-bio').innerText = profileData.bio;
             }
 
-            // الألوان والشفافية
             const root = document.documentElement;
             root.style.setProperty('--btn-bg', profileData.btnColor);
             root.style.setProperty('--btn-bg-2', profileData.btnColor2);
@@ -1126,7 +953,6 @@
             root.style.setProperty('--avatar-size', profileData.avatarSize + 'px');
             root.style.setProperty('--card-glow', profileData.btnColor + '44');
 
-            // إطار وصورة البروفايل
             const avatarWrapper = document.getElementById('avatar-wrapper');
             avatarWrapper.className = `avatar-container ${profileData.frame}`;
             const avatarImg = document.getElementById('avatar-img');
@@ -1141,7 +967,6 @@
                 avatarImg.src = profileData.avatar || 'https://via.placeholder.com/150';
             }
 
-            // الخلفية
             const bgImg = document.getElementById('bg-media');
             const bgVid = document.getElementById('bg-video');
             if (isVideoUrl(profileData.bg)) {
@@ -1154,7 +979,6 @@
                 if (profileData.bg) bgImg.src = profileData.bg;
             }
 
-            // الصوت والموسيقى
             const audioEl = document.getElementById('bg-audio');
             const audioWidget = document.getElementById('audio-widget');
             if (profileData.audioUrl && profileData.audioUrl.trim() !== '') {
@@ -1167,7 +991,6 @@
                 audioEl.pause();
             }
 
-            // توليد الأزرار المدمجة بالروابط
             const linksContainer = document.getElementById('display-links');
             linksContainer.innerHTML = '';
             profileData.links.forEach(link => {
@@ -1184,7 +1007,6 @@
             }
         }
 
-        // تشغيل وإيقاف الموسيقى
         function toggleAudio() {
             const audio = document.getElementById('bg-audio');
             const widget = document.getElementById('audio-widget');
@@ -1200,7 +1022,6 @@
             }
         }
 
-        // محرك التأثيرات المتحركة الاحترافي
         function initEffects(effectType) {
             const container = document.getElementById('effects-container');
             const canvas = document.getElementById('effects-canvas');
@@ -1211,7 +1032,6 @@
 
             if (effectType === 'none') return;
 
-            // تأثير مطر الماتريكس الرقمي عبر Canvas
             if (effectType === 'matrix') {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
@@ -1238,7 +1058,6 @@
                 return;
             }
 
-            // بقية التأثيرات البصرية عالية الوضوح
             const count = effectType === 'meteors' ? 14 : 32;
             for (let i = 0; i < count; i++) {
                 const el = document.createElement('div');
@@ -1286,7 +1105,6 @@
             }
         }
 
-        // حركة البطاقة ثلاثية الأبعاد 3D Tilt
         function setup3DTilt() {
             const card = document.getElementById('profile-card');
             document.addEventListener('mousemove', (e) => {
@@ -1307,7 +1125,6 @@
             });
         }
 
-        // الأثر السحري لمؤشر الماوس
         function setupCursorTrail() {
             let lastTime = 0;
             document.addEventListener('mousemove', (e) => {
@@ -1329,7 +1146,6 @@
             });
         }
 
-        // نسخ رابط المشاهدة للزوار
         function copyViewerLink() {
             const jsonString = JSON.stringify(profileData);
             const encoded = btoa(unescape(encodeURIComponent(jsonString)));

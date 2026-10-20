@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحتي الشخصية الاحترافية</title>
+    <!-- استدعاء مجموعة خطوط عربية وإنجليزية احترافية -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;600;800;900&family=Changa:wght@400;600;800&family=Orbitron:wght@500;800&family=Outfit:wght@400;600;800&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --btn-bg: #6366f1;
+            --btn-bg-2: #a855f7;
+            --btn-text: #ffffff;
+            --text-color: #ffffff;
+            --card-rgb: 15, 23, 42;
+            --card-opacity: 0.65;
+            --card-blur: 18px;
+            --bg-blur: 0px;
+            --bg-dim: 0.45;
+            --avatar-border-color: #ec4899;
+            --avatar-size: 135px;
+            --font-main: 'Cairo', sans-serif;
+            --card-glow: rgba(99, 102, 241, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #050811;
+            color: var(--text-color);
+            overflow-x: hidden;
+            position: relative;
+            padding: 25px 15px;
+            perspective: 1200px;
+        }
+
+        /* شاشة الدخول التفاعلية (Click to Enter) */
+        #enter-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 8, 17, 0.92);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: opacity 0.7s ease, visibility 0.7s ease;
+        }
+        #enter-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .enter-text {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px var(--btn-bg), 0 0 40px var(--btn-bg);
+            animation: pulseGlow 2s infinite;
+            padding: 15px 35px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 50px;
+            background: rgba(255,255,255,0.03);
+        }
+
+        /* الخلفية عالية الجودة */
+        #bg-media, #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -3;
+            filter: blur(var(--bg-blur)) contrast(1.06) saturate(1.12);
+            transform: scale(1.03); /* لمنع الحواف البيضاء عند التضبيب */
+            transition: filter 0.3s ease;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(0,0,0, calc(var(--bg-dim) - 0.15)) 0%, rgba(0,0,0, calc(var(--bg-dim) + 0.25)) 100%);
+            z-index: -2;
+        }
+
+        /* حاوية التأثيرات المتحركة (Canvas + DOM) */
+        #effects-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+        #effects-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* البطاقة الشخصية الاحترافية */
+        .profile-card {
+            background: rgba(var(--card-rgb), var(--card-opacity));
+            backdrop-filter: blur(var(--card-blur));
+            -webkit-backdrop-filter: blur(var(--card-blur));
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 28px;
+            padding: 42px 32px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 35px var(--card-glow);
+            z-index: 2;
+            transition: transform 0.15s ease-out, box-shadow 0.3s ease, background 0.3s ease;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        /* البروفايل وإطاراته الاحترافية */
+        .avatar-container {
+            width: var(--avatar-size);
+            height: var(--avatar-size);
+            margin: 0 auto 22px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: translateZ(30px);
+        }
+
+        .avatar-media {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #0f172a;
+            filter: contrast(1.05) saturate(1.08);
+            z-index: 2;
+        }
+
+        /* أنماط إطار البروفايل */
+        .frame-none .avatar-media {
+            border: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .frame-solid .avatar-media {
+            border: 4px solid var(--avatar-border-color);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+        .frame-neon .avatar-media {
+            border: 3px solid var(--avatar-border-color);
+            box-shadow: 0 0 15px var(--avatar-border-color), 0 0 35px var(--avatar-border-color), inset 0 0 15px var(--avatar-border-color);
+        }
+        .frame-rgb::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff0055, #ffbe0b, #00f5d4, #8338ec, #ff0055);
+            background-size: 300% 300%;
+            animation: rgbSpin 3s linear infinite;
+            z-index: 1;
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.5);
+        }
+        .frame-dashed::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 3px dashed var(--avatar-border-color);
+            animation: spinCircle 12s linear infinite;
+            z-index: 1;
+        }
+        .frame-gold::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            box-shadow: 0 0 25px rgba(252, 246, 186, 0.5);
+            z-index: 1;
+        }
+
+        @keyframes rgbSpin {
+            0% { background-position: 0% 50%; transform: rotate(0deg); }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; transform: rotate(360deg); }
+        }
+        @keyframes spinCircle {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* الاسم وشارة التوثيق */
+        .name-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            transform: translateZ(25px);
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .verified-badge {
+            font-size: 1.35rem;
+            display: inline-flex;
+            align-items: center;
+            filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.8));
+        }
+
+        .profile-bio {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            opacity: 0.92;
+            margin-bottom: 28px;
+            white-space: pre-line;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            min-height: 28px;
+            transform: translateZ(20px);
+        }
+
+        /* حاوية الأزرار والروابط */
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transform: translateZ(30px);
+        }
+
+        .link-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--btn-bg), var(--btn-bg-2));
+            color: var(--btn-text);
+            text-decoration: none;
+            padding: 16px 22px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1.08rem;
+            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.35);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* تأثيرات حركات الأزرار الاحترافية */
+        /* 1. قفز وتكبير ناعم */
+        .btn-anim-bounce:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5), 0 0 20px var(--btn-bg);
+        }
+
+        /* 2. توهج نيون مشع */
+        .btn-anim-glow {
+            box-shadow: 0 0 12px var(--btn-bg);
+        }
+        .btn-anim-glow:hover {
+            box-shadow: 0 0 25px var(--btn-bg), 0 0 50px var(--btn-bg-2);
+            transform: scale(1.03);
+        }
+
+        /* 3. شعاع ضوئي لامع (Shimmer) */
+        .btn-anim-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 40%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+            transform: rotate(30deg);
+            animation: shimmerSweep 3.5s infinite;
+        }
+        .btn-anim-shimmer:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+        }
+        @keyframes shimmerSweep {
+            0% { left: -60%; }
+            35%, 100% { left: 130%; }
+        }
+
+        /* 4. زر ثلاثي الأبعاد 3D */
+        .btn-anim-3d {
+            border-bottom: 5px solid rgba(0, 0, 0, 0.45);
+        }
+        .btn-anim-3d:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+        .btn-anim-3d:active {
+            transform: translateY(3px);
+            border-bottom-width: 2px;
+        }
+
+        /* 5. نبض مستمر */
+        .btn-anim-pulse {
+            animation: pulseGlow 2.2s infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); box-shadow: 0 0 25px var(--btn-bg); }
+        }
+
+        /* 6. اهتزاز السايبر (Cyber Glitch) */
+        .btn-anim-glitch:hover {
+            animation: glitchShake 0.35s cubic-bezier(.36,.07,.19,.97) both;
+            box-shadow: -4px 0 #ff0055, 4px 0 #00f5d4;
+        }
+        @keyframes glitchShake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(3px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* مشغل الصوت الاحترافي العائم */
+        .audio-widget {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 18px;
+            border-radius: 50px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 15px var(--btn-bg);
+            transition: 0.3s;
+        }
+        .audio-widget:hover { transform: scale(1.05); }
+        .equalizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 16px;
+        }
+        .eq-bar {
+            width: 3px;
+            background: var(--btn-bg);
+            border-radius: 2px;
+            height: 4px;
+            transition: 0.2s;
+        }
+        .audio-widget.playing .eq-bar {
+            animation: eqBounce 0.8s infinite ease-in-out alternate;
+        }
+        .audio-widget.playing .eq-bar:nth-child(2) { animation-delay: 0.2s; }
+        .audio-widget.playing .eq-bar:nth-child(3) { animation-delay: 0.4s; }
+        .audio-widget.playing .eq-bar:nth-child(4) { animation-delay: 0.1s; }
+        @keyframes eqBounce {
+            0% { height: 4px; }
+            100% { height: 16px; background: #ec4899; }
+        }
+
+        /* زر فتح لوحة المالك */
+        .owner-toggle-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px 22px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 800;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .owner-toggle-btn:hover { transform: translateY(-2px) scale(1.04); }
+
+        /* لوحة تحكم المالك الاحترافية */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            right: -480px;
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.97);
+            backdrop-filter: blur(20px);
+            color: #fff;
+            z-index: 1000;
+            padding: 25px;
+            overflow-y: auto;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -15px 0 40px rgba(0,0,0,0.7);
+            border-left: 1px solid rgba(255,255,255,0.12);
+        }
+        .admin-panel.open { right: 0; }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            position: sticky;
+            top: -25px;
+            background: rgba(15, 23, 42, 0.95);
+            padding-top: 10px;
+            z-index: 10;
+        }
+
+        .close-admin {
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .section-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 18px;
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #38bdf8;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="url"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            font-size: 0.92rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #38bdf8;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: #38bdf8;
+            cursor: pointer;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #0f172a;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            font-size: 0.85rem;
+        }
+        .color-item input[type="color"] {
+            border: none;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .checkbox-group input { width: 18px; height: 18px; accent-color: #38bdf8; }
+
+        .link-editor-item {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #334155;
+        }
+        .link-editor-item input { margin-bottom: 8px; }
+        .remove-link-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .add-link-btn {
+            width: 100%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+        .add-link-btn:hover { background: #2563eb; }
+
+        .btn-share {
+            width: 100%;
+            background: linear-gradient(45deg, #8b5cf6, #ec4899);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 1.05rem;
+            box-shadow: 0 10px 25px rgba(236, 72, 153, 0.4);
+            transition: 0.3s;
+        }
+        .btn-share:hover { transform: translateY(-2px); }
+
+        .hint { font-size: 0.76rem; color: #94a3b8; margin-top: 4px; }
+
+        /* جزيئات التأثيرات المتحركة */
+        .dom-particle {
+            position: absolute;
+            pointer-events: none;
+            will-change: transform;
+        }
+        @keyframes fallDown {
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+            15% { opacity: 0.95; }
+            85% { opacity: 0.95; }
+            100% { transform: translateY(105vh) translateX(40px) rotate(360deg); opacity: 0; }
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) scale(0.4); opacity: 0; }
+            20% { opacity: 0.9; }
+            80% { opacity: 0.9; }
+            100% { transform: translateY(-10vh) scale(1.1); opacity: 0; }
+        }
+        @keyframes shootingStar {
+            0% { transform: translateX(0) translateY(0) rotate(-45deg) scale(0); opacity: 0; }
+            10% { opacity: 1; transform: translateX(-100px) translateY(100px) rotate(-45deg) scale(1); }
+            100% { opacity: 0; transform: translateX(-900px) translateY(900px) rotate(-45deg) scale(0.5); }
+        }
+
+        /* أثر الماوس */
+        .cursor-sparkle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            font-size: 14px;
+            animation: sparkleFade 0.8s forwards ease-out;
+        }
+        @keyframes sparkleFade {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(0.2) translateY(25px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة الدخول لتشغيل الصوت والتأثيرات -->
+    <div id="enter-overlay" class="hidden" onclick="enterSite()">
+        <div class="enter-text" id="enter-btn-text">✨ اضغط هنا للدخول ✨</div>
+    </div>
+
+    <!-- وسائط الخلفية -->
+    <img id="bg-media" src="" alt="background">
+    <video id="bg-video" autoplay loop muted playsinline style="display: none;"></video>
+    <div class="bg-overlay"></div>
+
+    <!-- حاويات التأثيرات البصرية -->
+    <canvas id="effects-canvas"></canvas>
+    <div id="effects-container"></div>
+
+    <!-- مشغل الموسيقى العائم -->
+    <audio id="bg-audio" loop></audio>
+    <div id="audio-widget" class="audio-widget" onclick="toggleAudio()">
+        <div class="equalizer">
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+        </div>
+        <span id="audio-status-text" style="font-size: 0.85rem; font-weight: 700;">تشغيل الصوت</span>
+    </div>
+
+    <!-- زر المالك (يختفي في رابط المشاهدة) -->
+    <button id="owner-btn" class="owner-toggle-btn" onclick="toggleAdmin()">
+        ⚙️ تخصيص الصفحة (وضع المالك)
+    </button>
+
+    <!-- البطاقة الشخصية -->
+    <div class="profile-card" id="profile-card">
+        <div class="avatar-container frame-rgb" id="avatar-wrapper">
+            <img id="avatar-img" class="avatar-media" src="" alt="Profile">
+            <video id="avatar-video" class="avatar-media" autoplay loop muted playsinline style="display: none;"></video>
+        </div>
+
+        <div class="name-wrapper">
+            <h1 class="profile-name" id="display-name"></h1>
+            <span class="verified-badge" id="display-badge"></span>
+        </div>
+
+        <p class="profile-bio" id="display-bio"></p>
+
+        <div class="links-container" id="display-links"></div>
+    </div>
+
+    <!-- لوحة تحكم المالك الشاملة -->
+    <div class="admin-panel" id="admin-panel">
+        <div class="admin-header">
+            <h3>🛠️ استوديو تصميم الصفحة Pro</h3>
+            <button class="close-admin" onclick="toggleAdmin()">✕</button>
+        </div>
+
+        <!-- 1. المعلومات الشخصية والخطوط -->
+        <div class="section-box">
+            <div class="section-title">👤 الهوية والخطوط</div>
+            <div class="form-group">
+                <label>الاسم الشخصي أو اللقب:</label>
+                <input type="text" id="input-name" oninput="updateLive()">
+            </div>
+            <div class="form-group">
+                <label>شارة التوثيق بجانب الاسم:</label>
+                <select id="input-badge" onchange="updateLive()">
+                    <option value="">بدون شارة</option>
+                    <option value="☑️">☑️ توثيق رسمي أزرق</option>
+                    <option value="👑">👑 تاج ملكي ذهبي</option>
+                    <option value="💎">💎 ماسة النخبة</option>
+                    <option value="⚡">⚡ برق الطاقة</option>
+                    <option value="🔥">🔥 شعلة نارية</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>نبذة أو معلومات عنك:</label>
+                <textarea id="input-bio" rows="3" oninput="updateLive()"></textarea>
+                <label class="checkbox-group">
+                    <input type="checkbox" id="check-typewriter" onchange="updateLive()">
+                    <span>تفعيل تأثير الآلة الكاتبة للنبذة ⌨️</span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>نوع الخط (عربي / إنجليزي):</label>
+                <select id="input-font" onchange="updateLive()">
+                    <option value="'Cairo', sans-serif">خط القاهرة (Cairo - عصري وواضح)</option>
+                    <option value="'Tajawal', sans-serif">خط تجوال (Tajawal - ناعم وأنيق)</option>
+                    <option value="'Changa', sans-serif">خط تشانغا (Changa - هندسي وجريء)</option>
+                    <option value="'Aref Ruqaa', serif">خط الرقعة العربي (Aref Ruqaa - فخم)</option>
+                    <option value="'Amiri', serif">الخط الأميري الكلاسيكي (Amiri - ملكي)</option>
+                    <option value="'Outfit', sans-serif">خط Outfit (إنجليزي/عربي مودرن)</option>
+                    <option value="'Orbitron', sans-serif">خط السايبر والألعاب (Orbitron Gaming)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 2. البروفايل وإطاره -->
+        <div class="section-box">
+            <div class="section-title">🖼️ البروفايل والإطار</div>
+            <div class="form-group">
+                <label>رابط البروفايل (صورة عالية الدقة، GIF، أو فيديو MP4):</label>
+                <input type="url" id="input-avatar" placeholder="https://..." oninput="updateLive()">
+            </div>
+            <div class="form-group">
+                <label>شكل إطار البروفايل:</label>
+                <select id="input-frame" onchange="updateLive()">
+                    <option value="frame-rgb">🌈 إطار RGB متحرك ومضيء</option>
+                    <option value="frame-neon">⚡ حلقة نيون مشعة (Neon Glow)</option>
+                    <option value="frame-gold">👑 إطار ذهبي ملكي لامع</option>
+                    <option value="frame-dashed">🔄 إطار متقطع يدور حول الصورة</option>
+                    <option value="frame-solid">⭕ إطار كلاسيكي بلون موحد</option>
+                    <option value="frame-none">🚫 بدون إطار (صورة صافية)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><span>حجم صورة البروفايل:</span> <span id="val-avatar-size">135px</span></label>
+                <input type="range" id="range-avatar-size" min="95" max="185" value="135" oninput="updateLive()">
+            </div>
+        </div>
+
+        <!-- 3. الخلفية وشفافية البطاقة -->
+        <div class="section-box">
+            <div class="section-title">🌌 الخلفية وشفافية البطاقة</div>
+            <div class="form-group">
+                <label>رابط الخلفية (صورة 4K، GIF متحرك، أو فيديو MP4):</label>
+                <input type="url" id="input-bg" placeholder="https://..." oninput="updateLive()">
+            </div>
+            <div class="form-group">
+                <label><span>شفافية البطاقة:</span> <span id="val-card-opacity">65%</span></label>
+                <input type="range" id="range-card-opacity" min="0" max="100" value="65" oninput="updateLive()">
+                <div class="hint">اجعلها 0% لتصبح البطاقة شفافة تماماً، أو ارفعها لزيادة العمق.</div>
+            </div>
+            <div class="form-group">
+                <label><span>ضبابية زجاج البطاقة (Card Blur):</span> <span id="val-card-blur">18px</span></label>
+                <input type="range" id="range-card-blur" min="0" max="40" value="18" oninput="updateLive()">
+            </div>
+            <div class="form-group">
+                <label><span>ضبابية الخلفية (لإبراز البطاقة):</span> <span id="val-bg-blur">0px</span></label>
+                <input type="range" id="range-bg-blur" min="0" max="20" value="0" oninput="updateLive()">
+            </div>
+            <div class="form-group">
+                <label><span>درجة تعتيم الخلفية:</span> <span id="val-bg-dim">45%</span></label>
+                <input type="range" id="range-bg-dim" min="0" max="85" value="45" oninput="updateLive()">
+            </div>
+        </div>
+
+        <!-- 4. الألوان العميقة وتأثيرات الحركة -->
+        <div class="section-box">
+            <div class="section-title">🎨 الألوان والتأثيرات البصرية</div>
+            <div class="form-group">
+                <label>تأثير الشاشة المتحرك:</label>
+                <select id="input-effect" onchange="updateLive()">
+                    <option value="fireflies">✨ يراعات مضيئة ونجوم عائمة</option>
+                    <option value="sakura">🌸 بتلات أزهار الكرز المتساقطة (Sakura)</option>
+                    <option value="matrix">💻 مطر الماتريكس الرقمي (Matrix Hacker)</option>
+                    <option value="meteors">☄️ شهب ونيازك فضائية</option>
+                    <option value="snow">❄️ عاصفة ثلجية ناعمة</option>
+                    <option value="hearts">💖 قلوب نيون متصاعدة</option>
+                    <option value="none">🚫 بدون تأثيرات شاشة</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>تأثير حركة الأزرار:</label>
+                <select id="input-btn-anim" onchange="updateLive()">
+                    <option value="btn-anim-shimmer">✨ تمرير شعاع ضوئي لامع (Shimmer)</option>
+                    <option value="btn-anim-glow">🔥 توهج نيون عميق (Deep Glow)</option>
+                    <option value="btn-anim-bounce">🚀 قفز وتكبير انسيابي</option>
+                    <option value="btn-anim-3d">🎲 أزرار بارزة ثلاثية الأبعاد (3D Press)</option>
+                    <option value="btn-anim-glitch">⚡ اهتزاز السايبر (Cyber Glitch)</option>
+                    <option value="btn-anim-pulse">💓 نبض مستمر</option>
+                </select>
+            </div>
+
+            <div class="color-grid">
+                <div class="color-item">
+                    <input type="color" id="color-btn" oninput="updateLive()">
+                    <span>لون الزر (1)</span>
+                </div>
+                <div class="color-item">
+                    <input type="color" id="color-btn-2" oninput="updateLive()">
+                    <span>تدرج الزر (2)</span>
+                </div>
+                <div class="color-item">
+                    <input type="color" id="color-btn-text" oninput="updateLive()">
+                    <span>نص الأزرار</span>
+                </div>
+                <div class="color-item">
+                    <input type="color" id="color-text" oninput="updateLive()">
+                    <span>لون النصوص</span>
+                </div>
+                <div class="color-item">
+                    <input type="color" id="color-card" oninput="updateLive()">
+                    <span>لون البطاقة</span>
+                </div>
+                <div class="color-item">
+                    <input type="color" id="color-avatar-border" oninput="updateLive()">
+                    <span>لون الإطار</span>
+                </div>
+            </div>
+
+            <label class="checkbox-group" style="margin-top: 14px;">
+                <input type="checkbox" id="check-tilt" onchange="updateLive()">
+                <span>تفعيل حركة البطاقة ثلاثية الأبعاد مع الماوس 🧊</span>
+            </label>
+            <label class="checkbox-group">
+                <input type="checkbox" id="check-cursor" onchange="updateLive()">
+                <span>تفعيل الأثر السحري لمؤشر الماوس 🪄</span>
+            </label>
+        </div>
+
+        <!-- 5. الموسيقى وشاشة الدخول -->
+        <div class="section-box">
+            <div class="section-title">🎵 الموسيقى وشاشة الدخول</div>
+            <div class="form-group">
+                <label>رابط أغنية أو مقطع صوتي مباشر (MP3):</label>
+                <input type="url" id="input-audio" placeholder="https://example.com/song.mp3" oninput="updateLive()">
+                <div class="hint">يظهر مشغل أنيق أسفل الشاشة عند وضع رابط صوتي.</div>
+            </div>
+            <label class="checkbox-group">
+                <input type="checkbox" id="check-enter-screen" onchange="updateLive()">
+                <span>تفعيل شاشة "اضغط للدخول" (لتشغيل الأغنية تلقائياً)</span>
+            </label>
+            <div class="form-group" style="margin-top: 10px;">
+                <label>نص شاشة الدخول:</label>
+                <input type="text" id="input-enter-text" placeholder="✨ اضغط هنا للدخول ✨" oninput="updateLive()">
+            </div>
+        </div>
+
+        <!-- 6. الروابط المدمجة بالكلمات -->
+        <div class="section-box">
+            <div class="section-title">🔗 الكلمات المدمجة بروابط مباشرة</div>
+            <div id="links-editor-list"></div>
+            <button class="add-link-btn" onclick="addLinkField()">+ إضافة كلمة برابط جديد</button>
+        </div>
+
+        <button class="btn-share" onclick="copyViewerLink()">📋 نسخ رابط المشاهدة للزوار</button>
+        <div class="hint" style="text-align: center; margin-top: 8px; margin-bottom: 30px;">
+            سيتم تشفير كل إعداداتك وألوانك وأغانيك داخل الرابط ليراها الزوار بدون لوحة التحكم!
+        </div>
+    </div>
+
+    <script>
+        // الإعدادات الافتراضية الاحترافية
+        let profileData = {
+            name: "أحمد محمد",
+            badge: "👑",
+            bio: "صانع محتوى ومطور واجهات رقمية 🚀\nأصنع تجارب ويب استثنائية.. تصفح حساباتي وأعمالي بالأسفل.",
+            typewriter: true,
+            font: "'Cairo', sans-serif",
+            avatar: "https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif",
+            frame: "frame-rgb",
+            avatarSize: 135,
+            bg: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1920&q=85",
+            cardOpacity: 65,
+            cardBlur: 18,
+            bgBlur: 0,
+            bgDim: 45,
+            effect: "fireflies",
+            btnAnim: "btn-anim-shimmer",
+            btnColor: "#6366f1",
+            btnColor2: "#ec4899",
+            btnTextColor: "#ffffff",
+            textColor: "#ffffff",
+            cardColor: "#0f172a",
+            avatarBorderColor: "#ec4899",
+            tilt3d: true,
+            cursorTrail: true,
+            audioUrl: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",
+            enterScreen: false,
+            enterText: "✨ اضغط هنا للدخول إلى عالمي ✨",
+            links: [
+                { title: "حسابي الرسمي على إنستغرام 📸", url: "https://instagram.com" },
+                { title: "قناتي على يوتيوب ▶️", url: "https://youtube.com" },
+                { title: "تواصل معي عبر واتساب 💬", url: "https://wa.me/123456789" },
+                { title: "معرض أعمالي ومشاريعي 💼", url: "https://github.com" }
+            ]
+        };
+
+        let typewriterTimer = null;
+        let matrixInterval = null;
+
+        // تحويل كود اللون Hex إلى RGB للتحكم الدقيق بالشفافية
+        function hexToRgb(hex) {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+            const num = parseInt(hex, 16);
+            return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
+        }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedData = urlParams.get('view');
+
+            if (encodedData) {
+                // وضع الزائر (المشاهدة فقط)
+                try {
+                    const decodedJson = decodeURIComponent(escape(atob(encodedData)));
+                    profileData = { ...profileData, ...JSON.parse(decodedJson) };
+                    document.getElementById('owner-btn').style.display = 'none';
+                    document.getElementById('admin-panel').style.display = 'none';
+                } catch (e) {
+                    console.error("خطأ في قراءة الرابط:", e);
+                }
+            } else {
+                // وضع المالك
+                const saved = localStorage.getItem('proPersonalPageV2');
+                if (saved) {
+                    try { profileData = { ...profileData, ...JSON.parse(saved) }; } catch(e){}
+                }
+                populateAdminFields();
+            }
+
+            if (profileData.enterScreen) {
+                document.getElementById('enter-overlay').classList.remove('hidden');
+            }
+
+            renderPage(true);
+            setup3DTilt();
+            setupCursorTrail();
+        };
+
+        function enterSite() {
+            document.getElementById('enter-overlay').classList.add('hidden');
+            const audio = document.getElementById('bg-audio');
+            if (profileData.audioUrl && audio.src) {
+                audio.play().then(() => {
+                    document.getElementById('audio-widget').classList.add('playing');
+                    document.getElementById('audio-status-text').innerText = "إيقاف الصوت";
+                }).catch(() => {});
+            }
+            if (profileData.typewriter) startTypewriter(profileData.bio);
+        }
+
+        function toggleAdmin() {
+            document.getElementById('admin-panel').classList.toggle('open');
+        }
+
+        function populateAdminFields() {
+            document.getElementById('input-name').value = profileData.name;
+            document.getElementById('input-badge').value = profileData.badge;
+            document.getElementById('input-bio').value = profileData.bio;
+            document.getElementById('check-typewriter').checked = profileData.typewriter;
+            document.getElementById('input-font').value = profileData.font;
+            document.getElementById('input-avatar').value = profileData.avatar;
+            document.getElementById('input-frame').value = profileData.frame;
+            document.getElementById('range-avatar-size').value = profileData.avatarSize;
+            document.getElementById('input-bg').value = profileData.bg;
+            document.getElementById('range-card-opacity').value = profileData.cardOpacity;
+            document.getElementById('range-card-blur').value = profileData.cardBlur;
+            document.getElementById('range-bg-blur').value = profileData.bgBlur;
+            document.getElementById('range-bg-dim').value = profileData.bgDim;
+            document.getElementById('input-effect').value = profileData.effect;
+            document.getElementById('input-btn-anim').value = profileData.btnAnim;
+            document.getElementById('color-btn').value = profileData.btnColor;
+            document.getElementById('color-btn-2').value = profileData.btnColor2;
+            document.getElementById('color-btn-text').value = profileData.btnTextColor;
+            document.getElementById('color-text').value = profileData.textColor;
+            document.getElementById('color-card').value = profileData.cardColor;
+            document.getElementById('color-avatar-border').value = profileData.avatarBorderColor;
+            document.getElementById('check-tilt').checked = profileData.tilt3d;
+            document.getElementById('check-cursor').checked = profileData.cursorTrail;
+            document.getElementById('input-audio').value = profileData.audioUrl;
+            document.getElementById('check-enter-screen').checked = profileData.enterScreen;
+            document.getElementById('input-enter-text').value = profileData.enterText;
+
+            renderLinksEditor();
+        }
+
+        function renderLinksEditor() {
+            const container = document.getElementById('links-editor-list');
+            container.innerHTML = '';
+            profileData.links.forEach((link, index) => {
+                container.innerHTML += `
+                    <div class="link-editor-item">
+                        <input type="text" placeholder="الكلمة المعروضة" value="${link.title}" oninput="updateLink(${index}, 'title', this.value)">
+                        <input type="url" placeholder="الرابط المباشر (https://...)" value="${link.url}" oninput="updateLink(${index}, 'url', this.value)">
+                        <button class="remove-link-btn" onclick="removeLink(${index})">🗑️ حذف الرابط</button>
+                    </div>
+                `;
+            });
+        }
+
+        function updateLink(index, key, value) {
+            profileData.links[index][key] = value;
+            saveAndRender(false);
+        }
+
+        function addLinkField() {
+            profileData.links.push({ title: "زر جديد ✨", url: "https://" });
+            renderLinksEditor();
+            saveAndRender(false);
+        }
+
+        function removeLink(index) {
+            profileData.links.splice(index, 1);
+            renderLinksEditor();
+            saveAndRender(false);
+        }
+
+        function updateLive() {
+            const oldEffect = profileData.effect;
+            const oldBio = profileData.bio;
+            const oldTypewriter = profileData.typewriter;
+
+            profileData.name = document.getElementById('input-name').value;
+            profileData.badge = document.getElementById('input-badge').value;
+            profileData.bio = document.getElementById('input-bio').value;
+            profileData.typewriter = document.getElementById('check-typewriter').checked;
+            profileData.font = document.getElementById('input-font').value;
+            profileData.avatar = document.getElementById('input-avatar').value;
+            profileData.frame = document.getElementById('input-frame').value;
+            profileData.avatarSize = document.getElementById('range-avatar-size').value;
+            profileData.bg = document.getElementById('input-bg').value;
+            profileData.cardOpacity = document.getElementById('range-card-opacity').value;
+            profileData.cardBlur = document.getElementById('range-card-blur').value;
+            profileData.bgBlur = document.getElementById('range-bg-blur').value;
+            profileData.bgDim = document.getElementById('range-bg-dim').value;
+            profileData.effect = document.getElementById('input-effect').value;
+            profileData.btnAnim = document.getElementById('input-btn-anim').value;
+            profileData.btnColor = document.getElementById('color-btn').value;
+            profileData.btnColor2 = document.getElementById('color-btn-2').value;
+            profileData.btnTextColor = document.getElementById('color-btn-text').value;
+            profileData.textColor = document.getElementById('color-text').value;
+            profileData.cardColor = document.getElementById('color-card').value;
+            profileData.avatarBorderColor = document.getElementById('color-avatar-border').value;
+            profileData.tilt3d = document.getElementById('check-tilt').checked;
+            profileData.cursorTrail = document.getElementById('check-cursor').checked;
+            profileData.audioUrl = document.getElementById('input-audio').value;
+            profileData.enterScreen = document.getElementById('check-enter-screen').checked;
+            profileData.enterText = document.getElementById('input-enter-text').value;
+
+            const effectChanged = (oldEffect !== profileData.effect);
+            const bioChanged = (oldBio !== profileData.bio || oldTypewriter !== profileData.typewriter);
+
+            saveAndRender(effectChanged, bioChanged);
+        }
+
+        function saveAndRender(reinitEffect = false, restartBio = false) {
+            localStorage.setItem('proPersonalPageV2', JSON.stringify(profileData));
+            renderPage(reinitEffect, restartBio);
+        }
+
+        function isVideoUrl(url) {
+            if (!url) return false;
+            const clean = url.split('?')[0].toLowerCase();
+            return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.ogg');
+        }
+
+        // تأثير الآلة الكاتبة
+        function startTypewriter(text) {
+            const bioEl = document.getElementById('display-bio');
+            clearInterval(typewriterTimer);
+            bioEl.innerText = '';
+            let i = 0;
+            typewriterTimer = setInterval(() => {
+                if (i < text.length) {
+                    bioEl.innerText += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typewriterTimer);
+                }
+            }, 38);
+        }
+
+        function renderPage(reinitEffect = false, restartBio = false) {
+            // تحديث أرقام أشرطة التمرير في لوحة التحكم
+            const opLabel = document.getElementById('val-card-opacity');
+            if (opLabel) {
+                opLabel.innerText = profileData.cardOpacity + '%';
+                document.getElementById('val-card-blur').innerText = profileData.cardBlur + 'px';
+                document.getElementById('val-bg-blur').innerText = profileData.bgBlur + 'px';
+                document.getElementById('val-bg-dim').innerText = profileData.bgDim + '%';
+                document.getElementById('val-avatar-size').innerText = profileData.avatarSize + 'px';
+            }
+
+            // النصوص والخطوط
+            document.documentElement.style.setProperty('--font-main', profileData.font);
+            document.getElementById('display-name').innerText = profileData.name;
+            document.getElementById('display-badge').innerText = profileData.badge;
+            document.getElementById('enter-btn-text').innerText = profileData.enterText || "✨ اضغط هنا للدخول ✨";
+            document.title = profileData.name + " | الصفحة الرسمية";
+
+            if (profileData.typewriter && (reinitEffect || restartBio)) {
+                startTypewriter(profileData.bio);
+            } else if (!profileData.typewriter) {
+                clearInterval(typewriterTimer);
+                document.getElementById('display-bio').innerText = profileData.bio;
+            }
+
+            // الألوان والشفافية
+            const root = document.documentElement;
+            root.style.setProperty('--btn-bg', profileData.btnColor);
+            root.style.setProperty('--btn-bg-2', profileData.btnColor2);
+            root.style.setProperty('--btn-text', profileData.btnTextColor);
+            root.style.setProperty('--text-color', profileData.textColor);
+            root.style.setProperty('--card-rgb', hexToRgb(profileData.cardColor));
+            root.style.setProperty('--card-opacity', profileData.cardOpacity / 100);
+            root.style.setProperty('--card-blur', profileData.cardBlur + 'px');
+            root.style.setProperty('--bg-blur', profileData.bgBlur + 'px');
+            root.style.setProperty('--bg-dim', profileData.bgDim / 100);
+            root.style.setProperty('--avatar-border-color', profileData.avatarBorderColor);
+            root.style.setProperty('--avatar-size', profileData.avatarSize + 'px');
+            root.style.setProperty('--card-glow', profileData.btnColor + '44');
+
+            // إطار وصورة البروفايل
+            const avatarWrapper = document.getElementById('avatar-wrapper');
+            avatarWrapper.className = `avatar-container ${profileData.frame}`;
+            const avatarImg = document.getElementById('avatar-img');
+            const avatarVid = document.getElementById('avatar-video');
+            if (isVideoUrl(profileData.avatar)) {
+                avatarImg.style.display = 'none';
+                avatarVid.style.display = 'block';
+                if (avatarVid.src !== profileData.avatar) avatarVid.src = profileData.avatar;
+            } else {
+                avatarVid.style.display = 'none';
+                avatarImg.style.display = 'block';
+                avatarImg.src = profileData.avatar || 'https://via.placeholder.com/150';
+            }
+
+            // الخلفية
+            const bgImg = document.getElementById('bg-media');
+            const bgVid = document.getElementById('bg-video');
+            if (isVideoUrl(profileData.bg)) {
+                bgImg.style.display = 'none';
+                bgVid.style.display = 'block';
+                if (bgVid.src !== profileData.bg) bgVid.src = profileData.bg;
+            } else {
+                bgVid.style.display = 'none';
+                bgImg.style.display = 'block';
+                if (profileData.bg) bgImg.src = profileData.bg;
+            }
+
+            // الصوت والموسيقى
+            const audioEl = document.getElementById('bg-audio');
+            const audioWidget = document.getElementById('audio-widget');
+            if (profileData.audioUrl && profileData.audioUrl.trim() !== '') {
+                audioWidget.style.display = 'flex';
+                if (audioEl.src !== profileData.audioUrl) {
+                    audioEl.src = profileData.audioUrl;
+                }
+            } else {
+                audioWidget.style.display = 'none';
+                audioEl.pause();
+            }
+
+            // توليد الأزرار المدمجة بالروابط
+            const linksContainer = document.getElementById('display-links');
+            linksContainer.innerHTML = '';
+            profileData.links.forEach(link => {
+                const a = document.createElement('a');
+                a.href = link.url;
+                a.target = "_blank";
+                a.className = `link-btn ${profileData.btnAnim}`;
+                a.innerText = link.title;
+                linksContainer.appendChild(a);
+            });
+
+            if (reinitEffect) {
+                initEffects(profileData.effect);
+            }
+        }
+
+        // تشغيل وإيقاف الموسيقى
+        function toggleAudio() {
+            const audio = document.getElementById('bg-audio');
+            const widget = document.getElementById('audio-widget');
+            const text = document.getElementById('audio-status-text');
+            if (audio.paused) {
+                audio.play();
+                widget.classList.add('playing');
+                text.innerText = "إيقاف الصوت";
+            } else {
+                audio.pause();
+                widget.classList.remove('playing');
+                text.innerText = "تشغيل الصوت";
+            }
+        }
+
+        // محرك التأثيرات المتحركة الاحترافي
+        function initEffects(effectType) {
+            const container = document.getElementById('effects-container');
+            const canvas = document.getElementById('effects-canvas');
+            const ctx = canvas.getContext('2d');
+            container.innerHTML = '';
+            clearInterval(matrixInterval);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (effectType === 'none') return;
+
+            // تأثير مطر الماتريكس الرقمي عبر Canvas
+            if (effectType === 'matrix') {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                const chars = "01أبتثجحخدذرزسشصضطظعغفقكلمنهويABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                const fontSize = 15;
+                const columns = canvas.width / fontSize;
+                const drops = Array(Math.floor(columns)).fill(1);
+
+                matrixInterval = setInterval(() => {
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.06)";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = profileData.btnColor || "#00f5d4";
+                    ctx.font = fontSize + "px monospace";
+
+                    for (let i = 0; i < drops.length; i++) {
+                        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                            drops[i] = 0;
+                        }
+                        drops[i]++;
+                    }
+                }, 40);
+                return;
+            }
+
+            // بقية التأثيرات البصرية عالية الوضوح
+            const count = effectType === 'meteors' ? 14 : 32;
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('div');
+                el.className = 'dom-particle';
+                const size = Math.random() * 14 + 8;
+                el.style.left = Math.random() * 100 + 'vw';
+                const duration = (Math.random() * 6 + 5) + 's';
+                const delay = (Math.random() * 5) + 's';
+
+                if (effectType === 'fireflies') {
+                    el.style.width = (size / 2.2) + 'px';
+                    el.style.height = (size / 2.2) + 'px';
+                    el.style.borderRadius = '50%';
+                    el.style.background = '#fff';
+                    el.style.boxShadow = `0 0 12px #fff, 0 0 25px ${profileData.btnColor}, 0 0 40px ${profileData.btnColor2}`;
+                    el.style.animation = `floatUp ${duration} linear ${delay} infinite`;
+                } else if (effectType === 'sakura') {
+                    el.style.width = size + 'px';
+                    el.style.height = (size * 0.75) + 'px';
+                    el.style.background = 'linear-gradient(135deg, #ffb7c5, #ff69b4)';
+                    el.style.borderRadius = '15px 0px 15px 0px';
+                    el.style.boxShadow = '0 0 10px rgba(255, 183, 197, 0.6)';
+                    el.style.animation = `fallDown ${duration} linear ${delay} infinite`;
+                } else if (effectType === 'snow') {
+                    el.innerText = '❄️';
+                    el.style.fontSize = size + 'px';
+                    el.style.filter = 'drop-shadow(0 0 6px rgba(255,255,255,0.8))';
+                    el.style.animation = `fallDown ${duration} linear ${delay} infinite`;
+                } else if (effectType === 'hearts') {
+                    el.innerText = '💖';
+                    el.style.fontSize = size + 'px';
+                    el.style.filter = `drop-shadow(0 0 10px ${profileData.btnColor2})`;
+                    el.style.animation = `floatUp ${duration} linear ${delay} infinite`;
+                } else if (effectType === 'meteors') {
+                    el.style.top = (Math.random() * 50 - 20) + 'vh';
+                    el.style.left = (Math.random() * 100 + 20) + 'vw';
+                    el.style.width = '120px';
+                    el.style.height = '2px';
+                    el.style.background = `linear-gradient(90deg, #fff, ${profileData.btnColor}, transparent)`;
+                    el.style.boxShadow = `0 0 15px #fff`;
+                    el.style.animation = `shootingStar ${(Math.random() * 3 + 2.5)}s linear ${delay} infinite`;
+                }
+
+                container.appendChild(el);
+            }
+        }
+
+        // حركة البطاقة ثلاثية الأبعاد 3D Tilt
+        function setup3DTilt() {
+            const card = document.getElementById('profile-card');
+            document.addEventListener('mousemove', (e) => {
+                if (!profileData.tilt3d || window.innerWidth < 768) {
+                    card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                    return;
+                }
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                const rotateX = (-y / 22).toFixed(2);
+                const rotateY = (x / 22).toFixed(2);
+                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            document.addEventListener('mouseleave', () => {
+                card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            });
+        }
+
+        // الأثر السحري لمؤشر الماوس
+        function setupCursorTrail() {
+            let lastTime = 0;
+            document.addEventListener('mousemove', (e) => {
+                if (!profileData.cursorTrail) return;
+                const now = Date.now();
+                if (now - lastTime < 55) return;
+                lastTime = now;
+
+                const sp = document.createElement('div');
+                sp.className = 'cursor-sparkle';
+                const icons = ['✨', '⭐', '💫', '🔸'];
+                sp.innerText = icons[Math.floor(Math.random() * icons.length)];
+                sp.style.left = e.clientX + 'px';
+                sp.style.top = e.clientY + 'px';
+                sp.style.filter = `drop-shadow(0 0 6px ${profileData.btnColor})`;
+                document.body.appendChild(sp);
+
+                setTimeout(() => sp.remove(), 800);
+            });
+        }
+
+        // نسخ رابط المشاهدة للزوار
+        function copyViewerLink() {
+            const jsonString = JSON.stringify(profileData);
+            const encoded = btoa(unescape(encodeURIComponent(jsonString)));
+            const baseUrl = window.location.href.split('?')[0];
+            const viewerUrl = `${baseUrl}?view=${encoded}`;
+
+            navigator.clipboard.writeText(viewerUrl).then(() => {
+                alert("✅ تم نسخ رابط المشاهدة الاحترافي بنجاح!\n\nأرسل هذا الرابط لأصدقائك أو ضعه في البايو، وسيرون صفحتك بكامل التأثيرات والأغاني بدون زر التعديل.");
+            }).catch(() => {
+                prompt("انسخ رابط المشاهدة الخاص بك:", viewerUrl);
+            });
+        }
+    </script>
+</body>
+</html>

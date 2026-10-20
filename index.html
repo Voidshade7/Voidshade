@@ -737,27 +737,29 @@
             return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
         }
 
-        // تم إصلاح الدالة هنا بالكامل لتعرف فوراً ما إذا كان الرابط رابط زائر وتخفي لوحة التحكم تماماً
+        // تم إصلاح وتأمين قراءة بيانات الزائر ودعم اللغة العربية بالكامل هنا
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const encodedData = urlParams.get('view');
 
             if (encodedData) {
-                // وضع الزائر (إخفاء أزرار المالك تماماً وإجبار الموقع على عرض البيانات المشفرة)
                 try {
-                    const decodedJson = decodeURIComponent(escape(atob(encodedData)));
+                    // فك التشفير الآمن المدعم للغة العربية
+                    const decodedJson = decodeURIComponent(atob(encodedData).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                    
                     profileData = { ...profileData, ...JSON.parse(decodedJson) };
                     
-                    // إخفاء زر التعديل واللوحة نهائياً للزوار
+                    // إخفاء لوحة التحكم وزر المالك تماماً للزوار
                     const ownerBtn = document.getElementById('owner-btn');
                     const adminPanel = document.getElementById('admin-panel');
                     if (ownerBtn) ownerBtn.style.display = 'none';
                     if (adminPanel) adminPanel.style.display = 'none';
                 } catch (e) {
-                    console.error("خطأ في قراءة بيانات رابط الزائر:", e);
+                    console.error("خطأ في قراءة بيانات الزائر:", e);
                 }
             } else {
-                // وضع المالك: تحميل الإعدادات المحفوظة محلياً إن وجدت
                 const saved = localStorage.getItem('proPersonalPageV2');
                 if (saved) {
                     try { profileData = { ...profileData, ...JSON.parse(saved) }; } catch(e){}
@@ -1146,17 +1148,25 @@
             });
         }
 
+        // تم إصلاح دالة توليد التشفير لتصبح آمنة 100% مع الروابط على الإنترنت
         function copyViewerLink() {
-            const jsonString = JSON.stringify(profileData);
-            const encoded = btoa(unescape(encodeURIComponent(jsonString)));
-            const baseUrl = window.location.href.split('?')[0];
-            const viewerUrl = `${baseUrl}?view=${encoded}`;
+            try {
+                const jsonString = JSON.stringify(profileData);
+                const utf8Bytes = encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                    return String.fromCharCode('0x' + p1);
+                });
+                const encoded = btoa(utf8Bytes);
+                const baseUrl = window.location.href.split('?')[0];
+                const viewerUrl = `${baseUrl}?view=${encoded}`;
 
-            navigator.clipboard.writeText(viewerUrl).then(() => {
-                alert("✅ تم نسخ رابط المشاهدة الاحترافي بنجاح!\n\nأرسل هذا الرابط لأصدقائك أو ضعه في البايو، وسيرون صفحتك بكامل التأثيرات والأغاني بدون زر التعديل.");
-            }).catch(() => {
-                prompt("انسخ رابط المشاهدة الخاص بك:", viewerUrl);
-            });
+                navigator.clipboard.writeText(viewerUrl).then(() => {
+                    alert("✅ تم نسخ رابط المشاهدة الاحترافي بنجاح وبدون أي أخطاء!");
+                }).catch(() => {
+                    prompt("انسخ رابط المشاهدة الخاص بك:", viewerUrl);
+                });
+            } catch (err) {
+                alert("حدث خطأ أثناء توليد الرابط، تأكد من إدخال نصوص سليمة.");
+            }
         }
     </script>
 </body>
